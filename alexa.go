@@ -47,12 +47,10 @@ type RequestEnvelope struct {
 
 // Session containes the session data from the Alexa request.
 type Session struct {
-	New        bool   `json:"new"`
-	SessionID  string `json:"sessionId"`
-	Attributes struct {
-		String map[string]interface{} `json:"string"`
-	} `json:"attributes"`
-	User struct {
+	New        bool                   `json:"new"`
+	SessionID  string                 `json:"sessionId"`
+	Attributes map[string]interface{} `json:"attributes"`
+	User       struct {
 		UserID      string `json:"userId"`
 		AccessToken string `json:"accessToken"`
 	} `json:"user"`
@@ -247,6 +245,10 @@ func (alexa *Alexa) ProcessRequest(ctx context.Context, requestEnv *RequestEnvel
 			log.Println("Error handling OnSessionEnded.", err.Error())
 			return nil, err
 		}
+	}
+
+	if !responseEnv.Response.ShouldSessionEnd {
+		responseEnv.SessionAttributes = session.Attributes
 	}
 
 	return responseEnv, nil
